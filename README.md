@@ -19,6 +19,9 @@ For development purpose, consul is executed via docker
 * `transport.go` : make endpoints and json encode/decode
 * `discovery.go` : register service to consul.
 
-## Notes:
+### Notes:
 For this example, there are two endpoints. First one is hello endpoint, for saying hello.
 The other one is health endpoint. This endpoint is intended for consul health checks.
+
+For another microservice utilities, such us prometheus or log tracing will be implemented soon.
+Or using another project.
