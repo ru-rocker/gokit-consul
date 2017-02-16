@@ -23,12 +23,15 @@ import (
 	"github.com/ru-rocker/gokit-consul/hello"
 )
 
+//to execute: go run src/github.com/ru-rocker/gokit-consul/hello/discover.d/main.go -consul.addr 172.20.20.30 -consul.port 8500 -http 9000
 func main() {
 
 	var (
-		httpAddr = flag.String("http", ":9000",
-			"http listen address")
+		httpAddr = flag.String("http", ":9000", "http listen address")
+		consulAddr = flag.String("consul.addr", "", "consul address")
+		consulPort = flag.String("consul.port", "", "consul port")
 	)
+	flag.Parse()
 
 	// Logging domain.
 	var logger log.Logger
@@ -44,7 +47,7 @@ func main() {
 	{
 		consulConfig := api.DefaultConfig()
 
-		consulConfig.Address = "http://10.71.8.194:8500"
+		consulConfig.Address = "http://" + *consulAddr + ":" + *consulPort
 		consulClient, err := api.NewClient(consulConfig)
 		if err != nil {
 			logger.Log("err", err)

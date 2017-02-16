@@ -14,12 +14,15 @@ import (
 	"github.com/ru-rocker/gokit-consul/hello"
 )
 
+// to execute: go run src/github.com/ru-rocker/gokit-consul/hello/hello.d/main.go -consul.addr 172.20.20.30 -consul.port 8500 -advertise.addr 10.71.6.68 -advertise.port 7002
 func main() {
 	ctx := context.Background()
 
 	var (
-		httpAddr = flag.String("http", "7777",
-			"http listen address")
+		consulAddr = flag.String("consul.addr", "", "consul address")
+		consulPort = flag.String("consul.port", "", "consul port")
+		advertiseAddr = flag.String("advertise.addr", "", "advertise address")
+		advertisePort = flag.String("advertise.port", "", "advertise port")
 	)
 	flag.Parse()
 
@@ -44,14 +47,14 @@ func main() {
 		hello.EncodeResponse,
 	))
 
-	registar := hello.Register("10.71.8.194", "8500", "10.71.8.194", *httpAddr)
+	registar := hello.Register(*consulAddr, *consulPort, *advertiseAddr, *advertisePort)
 
 	// HTTP transport
 	go func() {
-		log.Println("httpAddress", *httpAddr)
+		log.Println("httpAddress", *advertisePort)
 		registar.Register()
 		handler := r
-		errChan <- http.ListenAndServe(":" + *httpAddr, handler)
+		errChan <- http.ListenAndServe(":" + *advertisePort, handler)
 	}()
 
 
