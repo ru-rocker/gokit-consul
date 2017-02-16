@@ -18,7 +18,7 @@ func main() {
 	ctx := context.Background()
 
 	var (
-		httpAddr = flag.String("http", ":7777",
+		httpAddr = flag.String("http", "7777",
 			"http listen address")
 	)
 	flag.Parse()
@@ -44,14 +44,14 @@ func main() {
 		hello.EncodeResponse,
 	))
 
-	registar := hello.Register("10.71.8.125", "8500")
+	registar := hello.Register("10.71.8.194", "8500", "10.71.8.194", *httpAddr)
 
 	// HTTP transport
 	go func() {
 		log.Println("httpAddress", *httpAddr)
 		registar.Register()
 		handler := r
-		errChan <- http.ListenAndServe(*httpAddr, handler)
+		errChan <- http.ListenAndServe(":" + *httpAddr, handler)
 	}()
 
 

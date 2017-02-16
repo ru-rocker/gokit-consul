@@ -7,9 +7,12 @@ import (
 	"github.com/hashicorp/consul/api"
 	"github.com/go-kit/kit/sd"
 	"math/rand"
+	"strconv"
+	"fmt"
+	"time"
 )
 
-func Register(consulAddress string, consulPort string) (registar sd.Registrar) {
+func Register(consulAddress string, consulPort string, advertiseAddress string, advertisePort string) (registar sd.Registrar) {
 	// Logging domain.
 	var logger log.Logger
 	{
@@ -18,7 +21,7 @@ func Register(consulAddress string, consulPort string) (registar sd.Registrar) {
 		logger = log.NewContext(logger).With("caller", log.DefaultCaller)
 	}
 
-	r := rand.New(rand.NewSource(99))
+	rand.Seed(time.Now().UTC().UnixNano())
 
 	// Service discovery domain. In this example we use Consul.
 	var client consulsd.Client
@@ -34,17 +37,20 @@ func Register(consulAddress string, consulPort string) (registar sd.Registrar) {
 	}
 
 	check := api.AgentServiceCheck{
-		HTTP: "http://" + consulAddress + ":7777" + "/health",
+		HTTP: "http://" + advertiseAddress + ":" + advertisePort + "/health",
 		Interval: "10s",
 		Timeout: "1s",
 		Notes: "Basic health checks",
 	}
 
+	port, _ := strconv.Atoi(advertisePort)
+	num := rand.Intn(100)
+	fmt.Println(num)
 	asr := api.AgentServiceRegistration{
-		ID: "hello" + string(r.Int()),
+		ID: "hello" + string(num),
 		Name: "hello",
-		Address: consulAddress,
-		Port: 7777,
+		Address: advertiseAddress,
+		Port: port,
 		Tags: []string{"hello", "playgound"},
 		Check: &check,
 	}

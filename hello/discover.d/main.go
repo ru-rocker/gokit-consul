@@ -44,7 +44,7 @@ func main() {
 	{
 		consulConfig := api.DefaultConfig()
 
-		consulConfig.Address = "http://10.71.8.125:8500"
+		consulConfig.Address = "http://10.71.8.194:8500"
 		consulClient, err := api.NewClient(consulConfig)
 		if err != nil {
 			logger.Log("err", err)
@@ -98,12 +98,6 @@ func helloFactory(_ context.Context, method, path string) sd.Factory {
 			return nil, nil, err
 		}
 		tgt.Path = path
-
-		// Since stringsvc doesn't have any kind of package we can import, or
-		// any formal spec, we are forced to just assert where the endpoints
-		// live, and write our own code to encode and decode requests and
-		// responses. Ideally, if you write the service, you will want to
-		// provide stronger guarantees to your clients.
 
 		var (
 			enc ht.EncodeRequestFunc

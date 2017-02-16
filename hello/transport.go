@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"bytes"
 	"io/ioutil"
+	"fmt"
 )
 
 type helloRequest struct {
@@ -29,7 +30,7 @@ func MakeHelloEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(helloRequest)
 		hello := svc.SayHello(req.Name)
-
+		fmt.Println(hello)
 		return helloResponse{Message: hello}, nil
 	}
 }
@@ -58,7 +59,6 @@ func EncodeResponse(_ context.Context, w http.ResponseWriter, response interface
 }
 
 func EncodeJSONRequest(_ context.Context, req *http.Request, request interface{}) error {
-	// Both uppercase and count requests are encoded in the same way:
 	// simple JSON serialization to the request body.
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(request); err != nil {
@@ -68,7 +68,7 @@ func EncodeJSONRequest(_ context.Context, req *http.Request, request interface{}
 	return nil
 }
 
-func DecodeHelloResponse(ctx context.Context, resp *http.Response) (interface{}, error) {
+func DecodeHelloResponse(_ context.Context, resp *http.Response) (interface{}, error) {
 	var response helloResponse
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		return nil, err
