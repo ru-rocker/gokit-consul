@@ -8,17 +8,19 @@ import (
 	"github.com/go-kit/kit/sd"
 	"math/rand"
 	"strconv"
-	"fmt"
 	"time"
 )
 
-func Register(consulAddress string, consulPort string, advertiseAddress string, advertisePort string) (registar sd.Registrar) {
+func Register(consulAddress string,
+	consulPort string,
+	advertiseAddress string,
+	advertisePort string) (registar sd.Registrar) {
 	// Logging domain.
 	var logger log.Logger
 	{
 		logger = log.NewLogfmtLogger(os.Stderr)
-		logger = log.NewContext(logger).With("ts", log.DefaultTimestampUTC)
-		logger = log.NewContext(logger).With("caller", log.DefaultCaller)
+		logger = log.With(logger, "ts", log.DefaultTimestampUTC)
+		logger = log.With(logger, "caller", log.DefaultCaller)
 	}
 
 	rand.Seed(time.Now().UTC().UnixNano())
@@ -37,22 +39,21 @@ func Register(consulAddress string, consulPort string, advertiseAddress string, 
 	}
 
 	check := api.AgentServiceCheck{
-		HTTP: "http://" + advertiseAddress + ":" + advertisePort + "/health",
+		HTTP:     "http://" + advertiseAddress + ":" + advertisePort + "/health",
 		Interval: "10s",
-		Timeout: "1s",
-		Notes: "Basic health checks",
+		Timeout:  "1s",
+		Notes:    "Basic health checks",
 	}
 
 	port, _ := strconv.Atoi(advertisePort)
 	num := rand.Intn(100)
-	fmt.Println(num)
 	asr := api.AgentServiceRegistration{
-		ID: "hello" + string(num),
-		Name: "hello",
+		ID:      "hello" + string(num),
+		Name:    "hello",
 		Address: advertiseAddress,
-		Port: port,
-		Tags: []string{"hello", "playgound"},
-		Check: &check,
+		Port:    port,
+		Tags:    []string{"hello", "playgound"},
+		Check:   &check,
 	}
 
 	registar = consulsd.NewRegistrar(client, &asr, logger)

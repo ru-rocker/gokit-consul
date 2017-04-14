@@ -4,7 +4,7 @@ import (
 	ht "github.com/go-kit/kit/transport/http"
 	"net/http"
 	"github.com/gorilla/mux"
-	"golang.org/x/net/context"
+	"context"
 	"log"
 	"flag"
 	"os"
@@ -34,14 +34,12 @@ func main() {
 	r := mux.NewRouter()
 
 	r.Handle("/hello", ht.NewServer(
-		ctx,
 		hello.MakeHelloEndpoint(svc),
 		hello.DecodeHelloRequest,
 		hello.EncodeResponse,
 	))
 
 	r.Methods("GET").Path("/health").Handler(ht.NewServer(
-		ctx,
 		hello.MakeHealthEndpoint(svc),
 		hello.DecodeHealthRequest,
 		hello.EncodeResponse,
